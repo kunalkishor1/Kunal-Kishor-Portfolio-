@@ -82,6 +82,11 @@ jobs:
           else
             echo "Warning: attached_assets directory not found"
           fi
+          # Also ensure resume.pdf is in public folder if it exists
+          if [ -f "client/public/resume.pdf" ]; then
+            cp client/public/resume.pdf dist/public/resume.pdf
+            echo "resume.pdf copied from public folder"
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
