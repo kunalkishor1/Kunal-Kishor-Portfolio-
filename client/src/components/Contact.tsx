@@ -71,7 +71,11 @@ export default function Contact() {
 
   const downloadResume = async () => {
     try {
-      const response = await fetch('/attached_assets/kunal kishor resume444_1751541870634.pdf');
+      // Get base path for GitHub Pages
+      const basePath = import.meta.env.BASE_URL || '/';
+      const resumePath = `${basePath}attached_assets/kunal kishor resume444_1751541870634.pdf`;
+      
+      const response = await fetch(resumePath);
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -87,7 +91,7 @@ export default function Contact() {
           description: "Your resume has been downloaded successfully.",
         });
       } else {
-        throw new Error('Failed to download resume');
+        throw new Error(`Failed to download resume: ${response.status} ${response.statusText}`);
       }
     } catch (error) {
       console.error('Error downloading resume:', error);

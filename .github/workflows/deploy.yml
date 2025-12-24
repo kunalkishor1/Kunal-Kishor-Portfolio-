@@ -72,6 +72,12 @@ jobs:
           EOF
           fi
 
+      - name: Copy attached_assets to dist
+        run: |
+          mkdir -p dist/public/attached_assets
+          cp -r attached_assets/* dist/public/attached_assets/ || echo "No attached_assets to copy"
+          echo "Attached assets copied to dist/public/attached_assets"
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
