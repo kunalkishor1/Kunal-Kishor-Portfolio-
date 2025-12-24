@@ -75,52 +75,47 @@ export default function Contact() {
       const basePath = import.meta.env.BASE_URL || '/';
       // Ensure base path ends with / and remove double slashes
       const normalizedBase = basePath.endsWith('/') ? basePath : basePath + '/';
-      // URL encode the filename to handle spaces
-      const fileName = 'kunal kishor resume444_1751541870634.pdf';
-      const encodedFileName = encodeURIComponent(fileName);
-      const resumePath = `${normalizedBase}attached_assets/${encodedFileName}`;
       
-      console.log('Attempting to download resume from:', resumePath);
+      // Try multiple paths: public folder first (simpler), then attached_assets
+      const pathsToTry = [
+        `${normalizedBase}resume.pdf`, // From public folder (simplest)
+        `${normalizedBase}attached_assets/kunal%20kishor%20resume444_1751541870634.pdf`, // URL encoded
+        `${normalizedBase}attached_assets/kunal kishor resume444_1751541870634.pdf`, // With spaces
+      ];
       
-      const response = await fetch(resumePath);
-      console.log('Resume fetch response:', response.status, response.statusText);
-      
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'Kunal_Kishor_Resume.pdf';
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        toast({
-          title: "Resume Downloaded!",
-          description: "Your resume has been downloaded successfully.",
-        });
-      } else {
-        // Try alternative path without URL encoding
-        console.log('Trying path without encoding...');
-        const altPath = `${normalizedBase}attached_assets/${fileName}`;
-        const altResponse = await fetch(altPath);
-        if (altResponse.ok) {
-          const blob = await altResponse.blob();
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'Kunal_Kishor_Resume.pdf';
-          document.body.appendChild(a);
-          a.click();
-          window.URL.revokeObjectURL(url);
-          document.body.removeChild(a);
-          toast({
-            title: "Resume Downloaded!",
-            description: "Your resume has been downloaded successfully.",
-          });
-        } else {
-          throw new Error(`Failed to download resume: ${response.status} ${response.statusText}. Tried: ${resumePath} and ${altPath}`);
+      let success = false;
+      for (const resumePath of pathsToTry) {
+        try {
+          console.log('Trying resume path:', resumePath);
+          const response = await fetch(resumePath);
+          
+          if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Kunal_Kishor_Resume.pdf';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            toast({
+              title: "Resume Downloaded!",
+              description: "Your resume has been downloaded successfully.",
+            });
+            success = true;
+            break;
+          } else {
+            console.log(`Path ${resumePath} failed with status: ${response.status}`);
+          }
+        } catch (err) {
+          console.log(`Path ${resumePath} threw error:`, err);
+          continue;
         }
+      }
+      
+      if (!success) {
+        throw new Error(`Failed to download resume. Tried paths: ${pathsToTry.join(', ')}`);
       }
     } catch (error) {
       console.error('Error downloading resume:', error);
