@@ -14,20 +14,6 @@ function AppRouter() {
   const [location, setLocation] = useLocation();
 
   useEffect(() => {
-    // Get the actual pathname from the browser
-    const actualPath = window.location.pathname;
-    
-    // Remove base path to get the route path
-    let routePath = actualPath;
-    if (basePath && basePath !== '/' && actualPath.startsWith(basePath)) {
-      routePath = actualPath.slice(basePath.length) || '/';
-    }
-    
-    // Normalize: ensure it starts with /
-    if (!routePath.startsWith('/')) {
-      routePath = '/' + routePath;
-    }
-    
     // Handle 404 redirect from GitHub Pages
     const urlParams = new URLSearchParams(window.location.search);
     const redirect = urlParams.get('redirect');
@@ -42,12 +28,26 @@ function AppRouter() {
       window.history.replaceState({}, '', basePath + newPath);
       return;
     }
+
+    // Get the actual pathname from the browser
+    const actualPath = window.location.pathname;
     
-    // Update location if it doesn't match the route path
-    if (location !== routePath) {
+    // Remove base path to get the route path
+    let routePath = actualPath;
+    if (basePath && basePath !== '/' && actualPath.startsWith(basePath)) {
+      routePath = actualPath.slice(basePath.length) || '/';
+    }
+    
+    // Normalize: ensure it starts with /
+    if (!routePath.startsWith('/')) {
+      routePath = '/' + routePath;
+    }
+    
+    // Only update if different to avoid infinite loops
+    if (location !== routePath && routePath !== actualPath) {
       setLocation(routePath);
     }
-  }, [location, setLocation]);
+  }, []); // Run only once on mount
 
   return (
     <Switch>
