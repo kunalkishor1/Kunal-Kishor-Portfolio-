@@ -112,7 +112,58 @@ For EmailJS setup instructions, see `EMAILJS_SETUP.md`.
 - **Colors**: Edit `client/src/index.css` for color scheme
 - **Content**: Update component files in `client/src/components/`
 - **Images**: Replace images in `attached_assets/` directory
-- **Resume**: Update PDF in `attached_assets/` directory
+- **Resume**: See [Updating Your Resume](#-updating-your-resume) section below
+
+## 📄 Updating Your Resume
+
+To update your resume, you have two easy options:
+
+### Option 1: Update Public Folder (Recommended - Easiest)
+
+1. **Replace the resume file:**
+   - Go to `client/public/` folder
+   - Replace `resume.pdf` with your new resume PDF
+   - **Important:** Keep the filename as `resume.pdf`
+
+2. **That's it!** The resume will automatically work after deployment.
+
+### Option 2: Update Attached Assets Folder
+
+1. **Replace the resume file:**
+   - Go to `attached_assets/` folder
+   - Replace the existing PDF with your new resume
+   - **Note the exact filename** (including spaces and capitalization)
+
+2. **Update the config file:**
+   - Open `client/src/config/resume.ts`
+   - Update the `attachedResume` field with your new filename:
+     ```typescript
+     attachedResume: 'Your_New_Resume_Filename.pdf',
+     ```
+
+3. **Commit and push:**
+   ```bash
+   git add attached_assets/Your_New_Resume_Filename.pdf
+   git add client/src/config/resume.ts
+   git commit -m "Update resume"
+   git push
+   ```
+
+### Changing the Download Filename
+
+To change what users see when they download your resume:
+
+1. Open `client/src/config/resume.ts`
+2. Update the `downloadName` field:
+   ```typescript
+   downloadName: 'Your_Desired_Filename.pdf',
+   ```
+
+### Quick Summary
+
+- **Easiest method:** Replace `client/public/resume.pdf` with your new resume (keep the same filename)
+- **Alternative:** Replace file in `attached_assets/` and update `client/src/config/resume.ts`
+- **No code changes needed** if you use Option 1!
 
 ## 📄 License
 

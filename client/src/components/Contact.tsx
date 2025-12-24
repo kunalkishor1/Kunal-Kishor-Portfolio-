@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { resumeConfig } from "@/config/resume";
 import emailjs from '@emailjs/browser';
 import { motion } from "framer-motion";
 import { Download, Github, Linkedin, Mail, MapPin, Phone, Send, Sparkles } from "lucide-react";
@@ -76,11 +77,12 @@ export default function Contact() {
       // Ensure base path ends with / and remove double slashes
       const normalizedBase = basePath.endsWith('/') ? basePath : basePath + '/';
       
-      // Try multiple paths: public folder first (simpler), then attached_assets
+      // Build paths to try from config
+      const encodedAttachedResume = encodeURIComponent(resumeConfig.attachedResume);
       const pathsToTry = [
-        `${normalizedBase}resume.pdf`, // From public folder (simplest)
-        `${normalizedBase}attached_assets/kunal%20kishor%20resume444_1751541870634.pdf`, // URL encoded
-        `${normalizedBase}attached_assets/kunal kishor resume444_1751541870634.pdf`, // With spaces
+        `${normalizedBase}${resumeConfig.publicResume}`, // From public folder (simplest)
+        `${normalizedBase}attached_assets/${encodedAttachedResume}`, // URL encoded
+        `${normalizedBase}attached_assets/${resumeConfig.attachedResume}`, // With spaces
       ];
       
       let success = false;
@@ -94,7 +96,7 @@ export default function Contact() {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'Kunal_Kishor_Resume.pdf';
+            a.download = resumeConfig.downloadName;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
