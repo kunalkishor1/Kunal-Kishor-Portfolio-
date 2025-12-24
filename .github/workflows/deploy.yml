@@ -75,8 +75,13 @@ jobs:
       - name: Copy attached_assets to dist
         run: |
           mkdir -p dist/public/attached_assets
-          cp -r attached_assets/* dist/public/attached_assets/ || echo "No attached_assets to copy"
-          echo "Attached assets copied to dist/public/attached_assets"
+          if [ -d "attached_assets" ]; then
+            cp -r attached_assets/* dist/public/attached_assets/
+            echo "Attached assets copied to dist/public/attached_assets"
+            ls -la dist/public/attached_assets/
+          else
+            echo "Warning: attached_assets directory not found"
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

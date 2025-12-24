@@ -73,9 +73,15 @@ export default function Contact() {
     try {
       // Get base path for GitHub Pages
       const basePath = import.meta.env.BASE_URL || '/';
-      const resumePath = `${basePath}attached_assets/kunal kishor resume444_1751541870634.pdf`;
+      // Ensure base path ends with / and remove double slashes
+      const normalizedBase = basePath.endsWith('/') ? basePath : basePath + '/';
+      const resumePath = `${normalizedBase}attached_assets/kunal kishor resume444_1751541870634.pdf`;
+      
+      console.log('Attempting to download resume from:', resumePath);
       
       const response = await fetch(resumePath);
+      console.log('Resume fetch response:', response.status, response.statusText);
+      
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -91,13 +97,33 @@ export default function Contact() {
           description: "Your resume has been downloaded successfully.",
         });
       } else {
-        throw new Error(`Failed to download resume: ${response.status} ${response.statusText}`);
+        // Try alternative path without base path as fallback
+        console.log('Trying fallback path...');
+        const fallbackPath = '/attached_assets/kunal kishor resume444_1751541870634.pdf';
+        const fallbackResponse = await fetch(fallbackPath);
+        if (fallbackResponse.ok) {
+          const blob = await fallbackResponse.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'Kunal_Kishor_Resume.pdf';
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+          toast({
+            title: "Resume Downloaded!",
+            description: "Your resume has been downloaded successfully.",
+          });
+        } else {
+          throw new Error(`Failed to download resume: ${response.status} ${response.statusText}`);
+        }
       }
     } catch (error) {
       console.error('Error downloading resume:', error);
       toast({
         title: "Download Error",
-        description: "Failed to download resume. Please try again later.",
+        description: `Failed to download resume: ${error instanceof Error ? error.message : 'Unknown error'}. Please check the console for details.`,
         variant: "destructive",
       });
     }
