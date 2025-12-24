@@ -10,7 +10,7 @@ import { queryClient } from "./lib/queryClient";
 // Get the base path from Vite's BASE_URL
 const basePath = import.meta.env.BASE_URL || '/';
 
-function Router() {
+function AppRouter() {
   const [location, setLocation] = useLocation();
 
   useEffect(() => {
@@ -47,7 +47,7 @@ function Router() {
     if (location !== routePath) {
       setLocation(routePath);
     }
-  }, []); // Only run once on mount
+  }, [location, setLocation]);
 
   return (
     <Switch>
