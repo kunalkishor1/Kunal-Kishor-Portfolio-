@@ -36,7 +36,7 @@ export default defineConfig(async () => {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'framer-motion': ['framer-motion'],
-          'ui-vendor': ['@radix-ui/react-toast', '@radix-ui/react-tooltip', '@radix-ui/react-progress'],
+          'ui-vendor': ['@radix-ui/react-toast', '@radix-ui/react-tooltip'],
         },
       },
     },
