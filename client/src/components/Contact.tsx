@@ -75,7 +75,10 @@ export default function Contact() {
       const basePath = import.meta.env.BASE_URL || '/';
       // Ensure base path ends with / and remove double slashes
       const normalizedBase = basePath.endsWith('/') ? basePath : basePath + '/';
-      const resumePath = `${normalizedBase}attached_assets/kunal kishor resume444_1751541870634.pdf`;
+      // URL encode the filename to handle spaces
+      const fileName = 'kunal kishor resume444_1751541870634.pdf';
+      const encodedFileName = encodeURIComponent(fileName);
+      const resumePath = `${normalizedBase}attached_assets/${encodedFileName}`;
       
       console.log('Attempting to download resume from:', resumePath);
       
@@ -97,12 +100,12 @@ export default function Contact() {
           description: "Your resume has been downloaded successfully.",
         });
       } else {
-        // Try alternative path without base path as fallback
-        console.log('Trying fallback path...');
-        const fallbackPath = '/attached_assets/kunal kishor resume444_1751541870634.pdf';
-        const fallbackResponse = await fetch(fallbackPath);
-        if (fallbackResponse.ok) {
-          const blob = await fallbackResponse.blob();
+        // Try alternative path without URL encoding
+        console.log('Trying path without encoding...');
+        const altPath = `${normalizedBase}attached_assets/${fileName}`;
+        const altResponse = await fetch(altPath);
+        if (altResponse.ok) {
+          const blob = await altResponse.blob();
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
@@ -116,7 +119,7 @@ export default function Contact() {
             description: "Your resume has been downloaded successfully.",
           });
         } else {
-          throw new Error(`Failed to download resume: ${response.status} ${response.statusText}`);
+          throw new Error(`Failed to download resume: ${response.status} ${response.statusText}. Tried: ${resumePath} and ${altPath}`);
         }
       }
     } catch (error) {
