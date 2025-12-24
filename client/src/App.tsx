@@ -4,54 +4,54 @@ import Home from "@/pages/Home";
 import NotFound from "@/pages/not-found";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { Route, Switch, useLocation } from "wouter";
+import { Route, Router, Switch } from "wouter";
 import { queryClient } from "./lib/queryClient";
 
 // Get the base path from Vite's BASE_URL
-const basePath = import.meta.env.BASE_URL;
+const basePath = import.meta.env.BASE_URL || '/';
 
-function Router() {
-  const [location, setLocation] = useLocation();
+// Custom hook to get location without base path
+function useBaseLocation() {
+  const pathname = window.location.pathname;
+  
+  // Remove base path if present
+  if (basePath && basePath !== '/' && pathname.startsWith(basePath)) {
+    return pathname.slice(basePath.length) || '/';
+  }
+  
+  return pathname || '/';
+}
 
-  // Handle GitHub Pages 404 redirect and normalize path
+function AppRouter() {
+  const location = useBaseLocation();
+
+  // Handle GitHub Pages 404 redirect
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const redirect = urlParams.get('redirect');
     
     if (redirect) {
-      // Remove base path if present and normalize
+      // Remove base path if present
       let newPath = redirect;
       if (basePath && basePath !== '/' && newPath.startsWith(basePath)) {
         newPath = newPath.slice(basePath.length) || '/';
       }
-      // Remove leading/trailing slashes except for root
-      newPath = newPath === '' ? '/' : newPath.replace(/^\/+|\/+$/g, '') || '/';
+      // Normalize path
       if (!newPath.startsWith('/')) newPath = '/' + newPath;
-      setLocation(newPath);
+      // Update URL
+      window.history.replaceState({}, '', basePath + newPath);
+      window.location.reload();
       return;
     }
-
-    // Normalize current location - remove base path
-    let currentPath = location;
-    if (basePath && basePath !== '/' && currentPath.startsWith(basePath)) {
-      currentPath = currentPath.slice(basePath.length) || '/';
-    }
-    // Ensure path starts with /
-    if (!currentPath.startsWith('/')) {
-      currentPath = '/' + currentPath;
-    }
-    
-    // Update location if it doesn't match
-    if (currentPath !== location) {
-      setLocation(currentPath);
-    }
-  }, [location, setLocation]);
+  }, []);
 
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route component={NotFound} />
-    </Switch>
+    <Router base={basePath}>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route component={NotFound} />
+      </Switch>
+    </Router>
   );
 }
 
@@ -60,7 +60,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
-        <Router />
+        <AppRouter />
       </TooltipProvider>
     </QueryClientProvider>
   );
