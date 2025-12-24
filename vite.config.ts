@@ -4,7 +4,7 @@ import path from "path";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: process.env.GITHUB_PAGES === 'true' ? '/portfolio-main/' : '/',
+  base: process.env.GITHUB_PAGES === 'true' ? '/Kunal-Kishor-Portfolio-/' : '/',
   plugins: [
     react(),
     runtimeErrorOverlay(),
