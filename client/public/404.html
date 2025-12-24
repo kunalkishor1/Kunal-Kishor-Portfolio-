@@ -6,13 +6,22 @@
     <title>Kunal Kishor - Software Engineer Portfolio</title>
     <script>
       // GitHub Pages 404.html fallback for SPA routing
-      // Redirect to index.html and let the router handle it
-      sessionStorage.redirect = location.href;
-      location.replace(location.pathname.split('/').slice(0, -1).join('/') + '/index.html');
+      // Simple redirect to index.html
+      var pathSegmentsToKeep = 1;
+      var l = window.location;
+      var basePath = '/Kunal-Kishor-Portfolio-';
+      var redirectPath = basePath + '/index.html';
+      
+      // If we're already at the base path, just go to index.html
+      if (l.pathname === basePath || l.pathname === basePath + '/') {
+        l.replace(redirectPath);
+      } else {
+        // Otherwise, redirect to index.html with the path as a query parameter
+        l.replace(redirectPath + '?redirect=' + encodeURIComponent(l.pathname + l.search + l.hash));
+      }
     </script>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/Kunal-Kishor-Portfolio-/src/main.tsx"></script>
+    <p>Redirecting...</p>
   </body>
 </html>
