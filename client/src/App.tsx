@@ -5,8 +5,18 @@ import NotFound from "@/pages/not-found";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Route, Switch } from "wouter";
 import { queryClient } from "./lib/queryClient";
+import { useEffect } from "react";
 
 function Router() {
+  // Handle GitHub Pages 404 redirect
+  useEffect(() => {
+    const redirect = sessionStorage.redirect;
+    delete sessionStorage.redirect;
+    if (redirect && redirect !== location.href) {
+      history.replaceState(null, '', redirect);
+    }
+  }, []);
+
   return (
     <Switch>
       <Route path="/" component={Home} />
